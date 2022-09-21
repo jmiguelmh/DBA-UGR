@@ -1,0 +1,19 @@
+│├Smith                             │I.M. Mace Windu                    
+│                                   │                                   
+││DATE:2022-09-21 20:10:30:347      │                                   
+││CONT:Sk9TRSBNSUdVRUwgTUFSUVVFWiBIR│                                   
+│├─────────────────────────────────>│                                   
+│                                   │                                   
+│                                   ││DATE:2022-09-21 20:10:30:528      
+│                                   ││CONT:Confirm check-in from agent S
+│<───────────────────────────────────┤                                  
+│                                   │                                   
+││DATE:2022-09-21 20:10:30:537      │                                   
+││CONT:Request checkout             │                                   
+│├─────────────────────────────────>│                                   
+│                                   │                                   
+│                                   ││DATE:2022-09-21 20:10:30:684      
+│                                   ││CONT:Confirm check-out of agent Sm
+│<───────────────────────────────────┤                                  
+│                                   │                                   
+
