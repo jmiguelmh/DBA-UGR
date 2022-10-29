@@ -1,0 +1,4 @@
+{"date":"2022-10-29 17:11:24:604","record":{"agent":"Jade BOOT","info":"Applied config ./config/Configuration.conf"}}
+{"date":"2022-10-29 17:11:24:609","record":{"agent":"Jade BOOT","info":"%% BOOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"}}
+{"date":"2022-10-29 17:11:24:792","record":{"agent":"Jade BOOT","info":"jade.MicroBoot Host: isg2.ugr.es[1099] <null>"}}
+{"date":"2022-10-29 17:11:24:942","record":{"agent":"Jade BOOT","info":"Connected to Jade"}}
