@@ -1,6 +1,7 @@
 package practica1;
 
 import Environment.Environment;
+import agents.DEST;
 import agents.LARVAFirstAgent;
 import ai.Choice;
 import ai.DecisionSet;
@@ -12,7 +13,7 @@ import tools.emojis;
 import world.Perceptor;
 
 
-public class AgenteComun extends LARVAFirstAgent {
+public class ITT extends LARVAFirstAgent {
 
     // The execution on any agent might be seen as a finite state automaton whose states are these
     enum Status {
@@ -27,7 +28,7 @@ public class AgenteComun extends LARVAFirstAgent {
     }
     Status myStatus;    // The current state
     String service = "PMANAGER", 
-            problem = "Halfmoon3",
+            problem = "",
             problemManager = "", 
             sessionManager, 
             content, 
@@ -58,6 +59,28 @@ public class AgenteComun extends LARVAFirstAgent {
         A.addChoice(new Choice("MOVE")).
                 addChoice(new Choice("LEFT")).
                 addChoice(new Choice("RIGHT"));
+        
+        problems = new String[] {
+            "SandboxTesting",
+            "FlatNorth",
+            "FlatNorthWest",
+            "FlatSouth",
+            "Bumpy0",
+            "Bumpy1",
+            "Bumpy2",
+            "Bumpy3",
+            "Bumpy4",
+            "Halfmoon1",
+            "Halfmoon3",
+            "Dagobah.Apr1",
+            "Dagobah.Apr2",
+            "Dagobah.Not1",
+            "Dagobah.Not2",
+            "Endor.Sob1",
+            "Endor.Sob2",
+            "Endor.Hon1",
+            "Endor.Hon2",
+        };
     }
 
     // Main execution body. It executes continuously until doExit(). after which it executes takeDown()
@@ -127,6 +150,10 @@ public class AgenteComun extends LARVAFirstAgent {
         }
         problemManager = this.DFGetAllProvidersOf(service).get(0);
         Info("Found problem manager " + problemManager);
+        
+        problem = this.inputSelect("Please select problem to solve", problems, "");
+        if (problem == null)
+            return Status.CHECKOUT;
 
         // Send it a message to open a problem instance
         this.outbox = new ACLMessage();
@@ -155,23 +182,47 @@ public class AgenteComun extends LARVAFirstAgent {
     }
 
     // Just register in the DF as a terrestrial agent AT_ST
-    public Status MyJoinSession() {        
+    public Status MyJoinSession() {
+        Info("Querying CITIES");
+        outbox = new ACLMessage();
+        outbox.setSender(this.getAID());
+        outbox.addReceiver(new AID(sessionManager, AID.ISLOCALNAME));
+        outbox.setContent("Query CITIES session " + sessionKey);
+        this.LARVAsend(outbox);
+        session = LARVAblockingReceive();
+        getEnvironment().setExternalPerceptions(session.getContent());
+        String[] cities = E.getCityList();
+        String city = inputSelect("Please select the city", cities, "");
+        
         this.resetAutoNAV();
-        this.DFAddMyServices(new String[]{"TYPE AT_ST"});
+        this.DFAddMyServices(new String[]{"TYPE ITT"});
         outbox = session.createReply();
-        outbox.setContent("Request join session " + sessionKey);
+        outbox.setContent("Request join session " + sessionKey + "in " + city);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         if (!session.getContent().startsWith("Confirm")) {
             Error("Could not join session " + sessionKey + " due to " + session.getContent());
             return Status.CLOSEPROBLEM;
         }
+        
         this.openRemote();
-        // Immediately afterwards, read the first perceptions
         this.MyReadPerceptions();
+        this.doPrepareNPC(1, DEST.class);
 //        Info(this.easyPrintPerceptions());
 //        // Mark this GPS positoin as our destination
 //        return this.myAssistedNavigation(37, 13);
+
+        outbox = session.createReply();
+        outbox.setContent("Query missions session " + sessionKey);
+        this.LARVAsend(outbox);
+        session = this.LARVAblockingReceive();
+        getEnvironment().setExternalPerceptions(session.getContent());
+        String mission = chooseMission();
+        if (mission == null)
+            return Status.CLOSEPROBLEM;
+        
+        E.setCurrentMission(mission);
+        
         return Status.SOLVEPROBLEM;
     }
 

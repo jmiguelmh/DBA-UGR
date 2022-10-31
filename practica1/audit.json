@@ -1,4 +1,133 @@
-{"date":"2022-10-29 17:11:24:604","record":{"agent":"Jade BOOT","info":"Applied config ./config/Configuration.conf"}}
-{"date":"2022-10-29 17:11:24:609","record":{"agent":"Jade BOOT","info":"%% BOOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"}}
-{"date":"2022-10-29 17:11:24:792","record":{"agent":"Jade BOOT","info":"jade.MicroBoot Host: isg2.ugr.es[1099] <null>"}}
-{"date":"2022-10-29 17:11:24:942","record":{"agent":"Jade BOOT","info":"Connected to Jade"}}
+{"date":"2022-10-31 16:25:19:185","record":{"agent":"Jade BOOT","info":"Applied config ./config/Configuration.conf"}}
+{"date":"2022-10-31 16:25:19:188","record":{"agent":"Jade BOOT","info":"%% BOOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"}}
+{"date":"2022-10-31 16:25:19:330","record":{"agent":"Jade BOOT","info":"jade.MicroBoot Host: isg2.ugr.es[1099] <null>"}}
+{"date":"2022-10-31 16:25:19:444","record":{"agent":"Jade BOOT","info":"Connected to Jade"}}
+{"date":"2022-10-31 16:25:22:509","record":{"agent":"Jade BOOT","info":"Launching agent ITT-4333 practica1.ITT"}}
+{"date":"2022-10-31 16:25:22:577","record":{"agent":"ITT-4333","info":"\n\n Status: START"}}
+{"date":"2022-10-31 16:25:22:583","record":{"agent":"Jade BOOT","info":"Launching agent XUIJOSE MIGUEL MARQUEZ HERREROS09E9 agents.XUIAgent"}}
+{"date":"2022-10-31 16:25:22:583","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKIN"}}
+{"date":"2022-10-31 16:25:22:585","record":{"agent":"ITT-4333","info":"Loading passport and checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:22:586","record":{"agent":"ITT-4333","info":"Checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:22:771","record":{"agent":"ITT-4333","info":"Found agent I.M. Mace Windu as Identity Manager"}}
+{"date":"2022-10-31 16:25:22:775","record":{"agent":"ITT-4333","info":"Sending passport to I.M. Mace Windu"}}
+{"date":"2022-10-31 16:25:22:797","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|SUBSCRIBE||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Sk9TRSBNSUdVRUwgTUFSUVVFWiBIRVJSRVJPUw== ZXlKUFRFVk5SVlJCSWpwN0ltbGtJam9pY1ZVelVEUlZkMGRrVTFCQk5FUXpOaUlzSW5SNWNHVWlPaUpQVEVWUVFWTlRVRTlTVkNJc0ltWnBaV3hrY3lJNmV5SnlZWGRRWVhOemNHOXlkQ0k2SWlJc0luVnpaWEpKUkNJNklpSXNJbU5wWkNJNklpSXNJbUZzYVdGeklqb2lJaXdpWlcxaGFXd2lPaUlpTENKdVlXMWxJam9pSW4wc0ltUmhkR1VpT2lJeU1ESXlMVEV3TFRJNUlERTNPakE0T2pFd09qRXdNeUlzSW1SbGMyTnlhWEIwYVc5dUlqb2lTbE5QVGlCUFltcGxZM1FnVEdsdWEyVmtJR0Z1WkNCRmJXSmxaR1ZrSWl3aWIyeGxJanAwY25WbExDSmpjbmx3ZEc4aU9pSWlmU3dpZFhObGNrbEVJam95TURRNU5Dd2lZMmxrSWpvaU1UWTNOVGs0TlRrM05pSXNJbUZzYVdGeklqb2lSbVZ1WVdwdmRDSXNJbVZ0WVdsc0lqb2lhbTFwWjNWbGJHMW9RR052Y25KbGJ5NTFaM0l1WlhNaUxDSnVZVzFsSWpvaVNrOVRSU0JOU1VkVlJVd2dUVUZTVVZWRldpQklSVkpTUlZKUFV5Sjk=||RPW|118F8035||"}}
+{"date":"2022-10-31 16:25:22:955","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS||RPW|FA07F98B  Reply||IRT|118F8035||"}}
+{"date":"2022-10-31 16:25:22:957","record":{"agent":"ITT-4333","info":"Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:22:958","record":{"agent":"ITT-4333","info":"\n\n Status: OPENPROBLEM"}}
+{"date":"2022-10-31 16:25:23:092","record":{"agent":"ITT-4333","info":"Found problem manager P.M. Mando"}}
+{"date":"2022-10-31 16:25:26:157","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|P.M. Mando ||CNT|Request open SandboxTesting||RPW|1E1FDCF9||"}}
+{"date":"2022-10-31 16:25:26:158","record":{"agent":"ITT-4333","info":"Request opening problem SandboxTesting to P.M. Mando"}}
+{"date":"2022-10-31 16:25:26:879","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Agree to open session SESSION::f9iNnmNu (a.k.a ) in problem SandboxTesting for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS||RPW|016FF70D SESSION::f9iNnmNu||IRT|1E1FDCF9||"}}
+{"date":"2022-10-31 16:25:26:882","record":{"agent":"ITT-4333","info":"P.M. Mando says: Agree to open session SESSION::f9iNnmNu (a.k.a ) in problem SandboxTesting for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:27:379","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Mues||RCV|ITT-4333 ||CNT|Hello, my name is S.M. Mues and I am going to guide you thru problem SandboxTesting please keep the session ID:\n`SESSION::f9iNnmNu`\nat hand.||CID|SESSION::f9iNnmNu||RPW|D8584C2F||IRT|1E1FDCF9||"}}
+{"date":"2022-10-31 16:25:27:381","record":{"agent":"ITT-4333","info":"S.M. Mues says: Hello, my name is S.M. Mues and I am going to guide you thru problem SandboxTesting please keep the session ID:\n`SESSION::f9iNnmNu`\nat hand."}}
+{"date":"2022-10-31 16:25:27:382","record":{"agent":"ITT-4333","info":"\n\n Status: JOINSESSION"}}
+{"date":"2022-10-31 16:25:27:382","record":{"agent":"ITT-4333","info":"Querying CITIES"}}
+{"date":"2022-10-31 16:25:27:384","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|S.M. Mues ||CNT|Query CITIES session SESSION::f9iNnmNu||RPW|685163D9||"}}
+{"date":"2022-10-31 16:25:27:432","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Mues||RCV|ITT-4333 ||CNT|ZIPDATA||RPW|1730D039 SESSION::f9iNnmNu||IRT|685163D9||"}}
+{"date":"2022-10-31 16:25:29:127","record":{"agent":"ITT-4333","info":"Adding services [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:29:173","record":{"agent":"ITT-4333","info":"Services registered [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:29:265","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|S.M. Mues ||CNT|Request join session SESSION::f9iNnmNuin CheckPoint1||RPW|S.M. Mues@CAJAR1667229929262||IRT|1730D039 SESSION::f9iNnmNu||"}}
+{"date":"2022-10-31 16:25:29:313","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|FAILURE||SND|S.M. Mues||RCV|ITT-4333 ||CNT|Failure : Bad session ID ||RPW|C33DB376 SESSION::f9iNnmNu||IRT|S.M. Mues@CAJAR1667229929262||"}}
+{"date":"2022-10-31 16:25:31:565","record":{"agent":"ITT-4333","info":"Could not join session SESSION::f9iNnmNu due to Failure : Bad session ID "}}
+{"date":"2022-10-31 16:25:32:739","record":{"agent":"ITT-4333","info":"\n\n Status: CLOSEPROBLEM"}}
+{"date":"2022-10-31 16:25:32:740","record":{"agent":"ITT-4333","info":"Plan = "}}
+{"date":"2022-10-31 16:25:32:740","record":{"agent":"ITT-4333","info":"Closing problem SandboxTesting, session SESSION::f9iNnmNu"}}
+{"date":"2022-10-31 16:25:32:742","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|P.M. Mando ||CNT|Cancel session SESSION::f9iNnmNu||RPW|P.M. Mando@CAJAR1667229932740||IRT|016FF70D SESSION::f9iNnmNu||"}}
+{"date":"2022-10-31 16:25:32:793","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Inform session SESSION::f9iNnmNu has been closed for agent ITT-4333 in problem SandboxTesting||RPW|DC012677 SESSION::f9iNnmNu||IRT|P.M. Mando@CAJAR1667229932740||"}}
+{"date":"2022-10-31 16:25:32:796","record":{"agent":"ITT-4333","info":"P.M. Mando says: Inform session SESSION::f9iNnmNu has been closed for agent ITT-4333 in problem SandboxTesting"}}
+{"date":"2022-10-31 16:25:32:797","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKOUT"}}
+{"date":"2022-10-31 16:25:32:797","record":{"agent":"ITT-4333","info":"Checking-out from LARVA"}}
+{"date":"2022-10-31 16:25:32:799","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|CANCEL||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Request checkout||RPW|I.M. Mace Windu@CAJAR1667229922957||IRT|FA07F98B  Reply||"}}
+{"date":"2022-10-31 16:25:32:972","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-out of agent ITT-4333||RPW|E34670D6  Reply||IRT|I.M. Mace Windu@CAJAR1667229922957||"}}
+{"date":"2022-10-31 16:25:32:980","record":{"agent":"ITT-4333","info":"Confirm check-out of agent ITT-4333"}}
+{"date":"2022-10-31 16:25:32:980","record":{"agent":"ITT-4333","info":"\n\n Status: EXIT"}}
+{"date":"2022-10-31 16:25:32:981","record":{"agent":"ITT-4333","info":"Taking down..."}}
+{"date":"2022-10-31 16:25:33:752","record":{"agent":"Jade BOOT","info":"Agent ITT-4333 has died"}}
+{"date":"2022-10-31 16:25:34:767","record":{"agent":"Jade BOOT","info":"Launching agent ITT-4333 practica1.ITT"}}
+{"date":"2022-10-31 16:25:34:813","record":{"agent":"ITT-4333","info":"\n\n Status: START"}}
+{"date":"2022-10-31 16:25:34:813","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKIN"}}
+{"date":"2022-10-31 16:25:34:814","record":{"agent":"ITT-4333","info":"Loading passport and checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:34:814","record":{"agent":"ITT-4333","info":"Checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:34:903","record":{"agent":"ITT-4333","info":"Found agent I.M. Mace Windu as Identity Manager"}}
+{"date":"2022-10-31 16:25:34:904","record":{"agent":"ITT-4333","info":"Sending passport to I.M. Mace Windu"}}
+{"date":"2022-10-31 16:25:34:905","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|SUBSCRIBE||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Sk9TRSBNSUdVRUwgTUFSUVVFWiBIRVJSRVJPUw== ZXlKUFRFVk5SVlJCSWpwN0ltbGtJam9pY1ZVelVEUlZkMGRrVTFCQk5FUXpOaUlzSW5SNWNHVWlPaUpQVEVWUVFWTlRVRTlTVkNJc0ltWnBaV3hrY3lJNmV5SnlZWGRRWVhOemNHOXlkQ0k2SWlJc0luVnpaWEpKUkNJNklpSXNJbU5wWkNJNklpSXNJbUZzYVdGeklqb2lJaXdpWlcxaGFXd2lPaUlpTENKdVlXMWxJam9pSW4wc0ltUmhkR1VpT2lJeU1ESXlMVEV3TFRJNUlERTNPakE0T2pFd09qRXdNeUlzSW1SbGMyTnlhWEIwYVc5dUlqb2lTbE5QVGlCUFltcGxZM1FnVEdsdWEyVmtJR0Z1WkNCRmJXSmxaR1ZrSWl3aWIyeGxJanAwY25WbExDSmpjbmx3ZEc4aU9pSWlmU3dpZFhObGNrbEVJam95TURRNU5Dd2lZMmxrSWpvaU1UWTNOVGs0TlRrM05pSXNJbUZzYVdGeklqb2lSbVZ1WVdwdmRDSXNJbVZ0WVdsc0lqb2lhbTFwWjNWbGJHMW9RR052Y25KbGJ5NTFaM0l1WlhNaUxDSnVZVzFsSWpvaVNrOVRSU0JOU1VkVlJVd2dUVUZTVVZWRldpQklSVkpTUlZKUFV5Sjk=||RPW|EF412BA3||"}}
+{"date":"2022-10-31 16:25:35:045","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS||RPW|631AAD59  Reply||IRT|EF412BA3||"}}
+{"date":"2022-10-31 16:25:35:049","record":{"agent":"ITT-4333","info":"Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:35:049","record":{"agent":"ITT-4333","info":"\n\n Status: OPENPROBLEM"}}
+{"date":"2022-10-31 16:25:35:138","record":{"agent":"ITT-4333","info":"Found problem manager P.M. Mando"}}
+{"date":"2022-10-31 16:25:38:400","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|P.M. Mando ||CNT|Request open Dagobah.Apr1||RPW|C231D930||"}}
+{"date":"2022-10-31 16:25:38:400","record":{"agent":"ITT-4333","info":"Request opening problem Dagobah.Apr1 to P.M. Mando"}}
+{"date":"2022-10-31 16:25:39:235","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Agree to open session SESSION::ULse2Zq6 (a.k.a ) in problem Dagobah.Apr1 for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS||RPW|DE4ED898 SESSION::ULse2Zq6||IRT|C231D930||"}}
+{"date":"2022-10-31 16:25:39:238","record":{"agent":"ITT-4333","info":"P.M. Mando says: Agree to open session SESSION::ULse2Zq6 (a.k.a ) in problem Dagobah.Apr1 for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:39:732","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Rajoem||RCV|ITT-4333 ||CNT|Hello, my name is S.M. Rajoem and I am going to guide you thru problem Dagobah.Apr1 please keep the session ID:\n`SESSION::ULse2Zq6`\nat hand.||CID|SESSION::ULse2Zq6||RPW|F680FC5F||IRT|C231D930||"}}
+{"date":"2022-10-31 16:25:39:737","record":{"agent":"ITT-4333","info":"S.M. Rajoem says: Hello, my name is S.M. Rajoem and I am going to guide you thru problem Dagobah.Apr1 please keep the session ID:\n`SESSION::ULse2Zq6`\nat hand."}}
+{"date":"2022-10-31 16:25:39:738","record":{"agent":"ITT-4333","info":"\n\n Status: JOINSESSION"}}
+{"date":"2022-10-31 16:25:39:739","record":{"agent":"ITT-4333","info":"Querying CITIES"}}
+{"date":"2022-10-31 16:25:39:740","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|S.M. Rajoem ||CNT|Query CITIES session SESSION::ULse2Zq6||RPW|79A6D2B3||"}}
+{"date":"2022-10-31 16:25:39:791","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Rajoem||RCV|ITT-4333 ||CNT|ZIPDATA||RPW|6C318A65 SESSION::ULse2Zq6||IRT|79A6D2B3||"}}
+{"date":"2022-10-31 16:25:43:510","record":{"agent":"ITT-4333","info":"Adding services [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:43:555","record":{"agent":"ITT-4333","info":"Services registered [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:43:646","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|S.M. Rajoem ||CNT|Request join session SESSION::ULse2Zq6in Dagobah||RPW|S.M. Rajoem@CAJAR1667229943644||IRT|6C318A65 SESSION::ULse2Zq6||"}}
+{"date":"2022-10-31 16:25:43:695","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|FAILURE||SND|S.M. Rajoem||RCV|ITT-4333 ||CNT|Failure : Bad session ID ||RPW|35E75300 SESSION::ULse2Zq6||IRT|S.M. Rajoem@CAJAR1667229943644||"}}
+{"date":"2022-10-31 16:25:45:207","record":{"agent":"ITT-4333","info":"Could not join session SESSION::ULse2Zq6 due to Failure : Bad session ID "}}
+{"date":"2022-10-31 16:25:46:622","record":{"agent":"ITT-4333","info":"\n\n Status: CLOSEPROBLEM"}}
+{"date":"2022-10-31 16:25:46:622","record":{"agent":"ITT-4333","info":"Plan = "}}
+{"date":"2022-10-31 16:25:46:622","record":{"agent":"ITT-4333","info":"Closing problem Dagobah.Apr1, session SESSION::ULse2Zq6"}}
+{"date":"2022-10-31 16:25:46:624","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|P.M. Mando ||CNT|Cancel session SESSION::ULse2Zq6||RPW|P.M. Mando@CAJAR1667229946622||IRT|DE4ED898 SESSION::ULse2Zq6||"}}
+{"date":"2022-10-31 16:25:46:675","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Inform session SESSION::ULse2Zq6 has been closed for agent ITT-4333 in problem Dagobah.Apr1||RPW|555A0EC3 SESSION::ULse2Zq6||IRT|P.M. Mando@CAJAR1667229946622||"}}
+{"date":"2022-10-31 16:25:46:677","record":{"agent":"ITT-4333","info":"P.M. Mando says: Inform session SESSION::ULse2Zq6 has been closed for agent ITT-4333 in problem Dagobah.Apr1"}}
+{"date":"2022-10-31 16:25:46:677","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKOUT"}}
+{"date":"2022-10-31 16:25:46:678","record":{"agent":"ITT-4333","info":"Checking-out from LARVA"}}
+{"date":"2022-10-31 16:25:46:679","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|CANCEL||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Request checkout||RPW|I.M. Mace Windu@CAJAR1667229935048||IRT|631AAD59  Reply||"}}
+{"date":"2022-10-31 16:25:46:788","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-out of agent ITT-4333||RPW|81795E22  Reply||IRT|I.M. Mace Windu@CAJAR1667229935048||"}}
+{"date":"2022-10-31 16:25:46:789","record":{"agent":"ITT-4333","info":"Confirm check-out of agent ITT-4333"}}
+{"date":"2022-10-31 16:25:46:790","record":{"agent":"ITT-4333","info":"\n\n Status: EXIT"}}
+{"date":"2022-10-31 16:25:46:790","record":{"agent":"ITT-4333","info":"Taking down..."}}
+{"date":"2022-10-31 16:25:46:947","record":{"agent":"Jade BOOT","info":"Agent ITT-4333 has died"}}
+{"date":"2022-10-31 16:25:47:958","record":{"agent":"Jade BOOT","info":"Launching agent ITT-4333 practica1.ITT"}}
+{"date":"2022-10-31 16:25:48:002","record":{"agent":"ITT-4333","info":"\n\n Status: START"}}
+{"date":"2022-10-31 16:25:48:002","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKIN"}}
+{"date":"2022-10-31 16:25:48:002","record":{"agent":"ITT-4333","info":"Loading passport and checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:48:004","record":{"agent":"ITT-4333","info":"Checking-in to LARVA"}}
+{"date":"2022-10-31 16:25:48:093","record":{"agent":"ITT-4333","info":"Found agent I.M. Mace Windu as Identity Manager"}}
+{"date":"2022-10-31 16:25:48:093","record":{"agent":"ITT-4333","info":"Sending passport to I.M. Mace Windu"}}
+{"date":"2022-10-31 16:25:48:095","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|SUBSCRIBE||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Sk9TRSBNSUdVRUwgTUFSUVVFWiBIRVJSRVJPUw== ZXlKUFRFVk5SVlJCSWpwN0ltbGtJam9pY1ZVelVEUlZkMGRrVTFCQk5FUXpOaUlzSW5SNWNHVWlPaUpQVEVWUVFWTlRVRTlTVkNJc0ltWnBaV3hrY3lJNmV5SnlZWGRRWVhOemNHOXlkQ0k2SWlJc0luVnpaWEpKUkNJNklpSXNJbU5wWkNJNklpSXNJbUZzYVdGeklqb2lJaXdpWlcxaGFXd2lPaUlpTENKdVlXMWxJam9pSW4wc0ltUmhkR1VpT2lJeU1ESXlMVEV3TFRJNUlERTNPakE0T2pFd09qRXdNeUlzSW1SbGMyTnlhWEIwYVc5dUlqb2lTbE5QVGlCUFltcGxZM1FnVEdsdWEyVmtJR0Z1WkNCRmJXSmxaR1ZrSWl3aWIyeGxJanAwY25WbExDSmpjbmx3ZEc4aU9pSWlmU3dpZFhObGNrbEVJam95TURRNU5Dd2lZMmxrSWpvaU1UWTNOVGs0TlRrM05pSXNJbUZzYVdGeklqb2lSbVZ1WVdwdmRDSXNJbVZ0WVdsc0lqb2lhbTFwWjNWbGJHMW9RR052Y25KbGJ5NTFaM0l1WlhNaUxDSnVZVzFsSWpvaVNrOVRSU0JOU1VkVlJVd2dUVUZTVVZWRldpQklSVkpTUlZKUFV5Sjk=||RPW|B787492F||"}}
+{"date":"2022-10-31 16:25:48:197","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS||RPW|9773BF16  Reply||IRT|B787492F||"}}
+{"date":"2022-10-31 16:25:48:198","record":{"agent":"ITT-4333","info":"Confirm check-in from agent ITT-4333 in representation of user 20494 JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:48:198","record":{"agent":"ITT-4333","info":"\n\n Status: OPENPROBLEM"}}
+{"date":"2022-10-31 16:25:48:286","record":{"agent":"ITT-4333","info":"Found problem manager P.M. Mando"}}
+{"date":"2022-10-31 16:25:50:478","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|P.M. Mando ||CNT|Request open Dagobah.Apr1||RPW|ECFFCB8E||"}}
+{"date":"2022-10-31 16:25:50:479","record":{"agent":"ITT-4333","info":"Request opening problem Dagobah.Apr1 to P.M. Mando"}}
+{"date":"2022-10-31 16:25:51:277","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Agree to open session SESSION::pcsfRewC (a.k.a ) in problem Dagobah.Apr1 for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS||RPW|C5FE60DB SESSION::pcsfRewC||IRT|ECFFCB8E||"}}
+{"date":"2022-10-31 16:25:51:283","record":{"agent":"ITT-4333","info":"P.M. Mando says: Agree to open session SESSION::pcsfRewC (a.k.a ) in problem Dagobah.Apr1 for agent ITT-4333 in representation of user JOSE MIGUEL MARQUEZ HERREROS"}}
+{"date":"2022-10-31 16:25:51:775","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Daos||RCV|ITT-4333 ||CNT|Hello, my name is S.M. Daos and I am going to guide you thru problem Dagobah.Apr1 please keep the session ID:\n`SESSION::pcsfRewC`\nat hand.||CID|SESSION::pcsfRewC||RPW|D3C69092||IRT|ECFFCB8E||"}}
+{"date":"2022-10-31 16:25:51:781","record":{"agent":"ITT-4333","info":"S.M. Daos says: Hello, my name is S.M. Daos and I am going to guide you thru problem Dagobah.Apr1 please keep the session ID:\n`SESSION::pcsfRewC`\nat hand."}}
+{"date":"2022-10-31 16:25:51:783","record":{"agent":"ITT-4333","info":"\n\n Status: JOINSESSION"}}
+{"date":"2022-10-31 16:25:51:783","record":{"agent":"ITT-4333","info":"Querying CITIES"}}
+{"date":"2022-10-31 16:25:51:785","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|NOT-UNDERSTOOD||SND|ITT-4333||RCV|S.M. Daos ||CNT|Query CITIES session SESSION::pcsfRewC||RPW|528D43C2||"}}
+{"date":"2022-10-31 16:25:51:837","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|INFORM||SND|S.M. Daos||RCV|ITT-4333 ||CNT|ZIPDATA||RPW|116CD4DE SESSION::pcsfRewC||IRT|528D43C2||"}}
+{"date":"2022-10-31 16:25:54:163","record":{"agent":"ITT-4333","info":"Adding services [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:54:208","record":{"agent":"ITT-4333","info":"Services registered [TYPE ITT]"}}
+{"date":"2022-10-31 16:25:54:301","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|S.M. Daos ||CNT|Request join session SESSION::pcsfRewCin Dagobah||RPW|S.M. Daos@CAJAR1667229954297||IRT|116CD4DE SESSION::pcsfRewC||"}}
+{"date":"2022-10-31 16:25:54:348","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|FAILURE||SND|S.M. Daos||RCV|ITT-4333 ||CNT|Failure : Bad session ID ||RPW|455B4A90 SESSION::pcsfRewC||IRT|S.M. Daos@CAJAR1667229954297||"}}
+{"date":"2022-10-31 16:25:55:429","record":{"agent":"ITT-4333","info":"Could not join session SESSION::pcsfRewC due to Failure : Bad session ID "}}
+{"date":"2022-10-31 16:25:57:095","record":{"agent":"ITT-4333","info":"\n\n Status: CLOSEPROBLEM"}}
+{"date":"2022-10-31 16:25:57:096","record":{"agent":"ITT-4333","info":"Plan = "}}
+{"date":"2022-10-31 16:25:57:096","record":{"agent":"ITT-4333","info":"Closing problem Dagobah.Apr1, session SESSION::pcsfRewC"}}
+{"date":"2022-10-31 16:25:57:103","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|INFORM||SND|ITT-4333||RCV|P.M. Mando ||CNT|Cancel session SESSION::pcsfRewC||RPW|P.M. Mando@CAJAR1667229957096||IRT|C5FE60DB SESSION::pcsfRewC||"}}
+{"date":"2022-10-31 16:25:57:150","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|NOT-UNDERSTOOD||SND|P.M. Mando||RCV|ITT-4333 ||CNT|Failure : The message received is not a reply of my previous message. Please use the method createReply()||RPW|618A434A SESSION::qXcalJqJ||IRT|P.M. Mando@CAJAR1667229957096||"}}
+{"date":"2022-10-31 16:25:57:152","record":{"agent":"ITT-4333","info":"P.M. Mando says: Failure : The message received is not a reply of my previous message. Please use the method createReply()"}}
+{"date":"2022-10-31 16:25:57:152","record":{"agent":"ITT-4333","info":"\n\n Status: CHECKOUT"}}
+{"date":"2022-10-31 16:25:57:152","record":{"agent":"ITT-4333","info":"Checking-out from LARVA"}}
+{"date":"2022-10-31 16:25:57:154","record":{"agent":"ITT-4333","info":"⭕> Sending ACLM  ||PFM|CANCEL||SND|ITT-4333||RCV|I.M. Mace Windu ||CNT|Request checkout||RPW|I.M. Mace Windu@CAJAR1667229948197||IRT|9773BF16  Reply||"}}
+{"date":"2022-10-31 16:25:57:252","record":{"agent":"ITT-4333","info":"⭕< Received ACLM  ||PFM|CONFIRM||SND|I.M. Mace Windu||RCV|ITT-4333 ||CNT|Confirm check-out of agent ITT-4333||RPW|3F8CB115  Reply||IRT|I.M. Mace Windu@CAJAR1667229948197||"}}
+{"date":"2022-10-31 16:25:57:254","record":{"agent":"ITT-4333","info":"Confirm check-out of agent ITT-4333"}}
+{"date":"2022-10-31 16:25:57:256","record":{"agent":"ITT-4333","info":"\n\n Status: EXIT"}}
+{"date":"2022-10-31 16:25:57:256","record":{"agent":"ITT-4333","info":"Taking down..."}}
+{"date":"2022-10-31 16:25:58:148","record":{"agent":"Jade BOOT","info":"Agent ITT-4333 has died"}}
+{"date":"2022-10-31 16:26:04:227","record":{"agent":"Jade BOOT","info":"Agent XUIJOSE MIGUEL MARQUEZ HERREROS09E9 deactivated"}}
+{"date":"2022-10-31 16:26:05:242","record":{"agent":"Jade BOOT","info":"Shutting down"}}
+{"date":"2022-10-31 16:26:05:242","record":{"agent":"Jade BOOT","info":"Turning off JadeBoot"}}
+{"date":"2022-10-31 16:26:05:243","record":{"agent":"Jade BOOT","info":"Shutting down container BE-150.214.190.126_1099-4997"}}
+{"date":"2022-10-31 16:26:05:248","record":{"agent":"Jade BOOT","info":"Container BE-150.214.190.126_1099-4997 shut down"}}
