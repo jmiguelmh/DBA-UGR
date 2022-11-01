@@ -14,8 +14,6 @@ import world.Perceptor;
 
 
 public class ITT extends LARVAFirstAgent {
-
-    // The execution on any agent might be seen as a finite state automaton whose states are these
     enum Status {
         START, 
         CHECKIN, 
@@ -26,44 +24,44 @@ public class ITT extends LARVAFirstAgent {
         CHECKOUT, 
         EXIT
     }
-    Status myStatus;    // The current state
+    
+    enum Type {
+        MOVEIN,
+        LIST,
+        REPORT
+    }
+    
+    Status myStatus;
     String service = "PMANAGER", 
             problem = "",
             problemManager = "", 
             sessionManager, 
             content, 
-            sessionKey,
-            sessionAlias;
-    ACLMessage open, session; // Backup of relevant messages
-    String[] contentTokens; // To parse the content
+            sessionKey;
+    ACLMessage open, session;
+    String[] contentTokens;
     protected String action = "", preplan = "", whichWall, nextWhichwall;
     protected String[] problems;
     protected int indexplan = 0, myEnergy = 0, indexSensor = 0;
-    protected double distance, nextdistance; // Which was the distance to the goal in that moment
-    protected Point3D point, nextPoint; // Which was the GPS position of the agente in that moment?
+    protected double distance, nextdistance;
+    protected Point3D point, nextPoint;
     protected boolean showPerceptions = false, useAlias = false;
     Plan behaviour = null;
     Environment Ei, Ef;
-    boolean MyAssistedNavigationActivated = false;
     Choice a;
+    Boolean goalInitiated = false;
 
-    // This is the firs method executed by any agent, right before its creation
     @Override
     public void setup() {
         super.setup();
-        showPerceptions = false;
         logger.onTabular();
         myStatus = Status.START;
         this.setupEnvironment();
 
-        // Acciones disponibles
         A = new DecisionSet();
-        A.addChoice(new Choice("MOVE"));
-        A.addChoice(new Choice("LEFT"));
-        A.addChoice(new Choice("RIGHT"));
-        
-        this.enableDeepLARVAMonitoring();
-        this.deactivateSequenceDiagrams();
+        A.addChoice(new Choice("MOVE")).
+                addChoice(new Choice("LEFT")).
+                addChoice(new Choice("RIGHT"));
         
         problems = new String[] {
             "SandboxTesting",
@@ -88,7 +86,6 @@ public class ITT extends LARVAFirstAgent {
         };
     }
 
-    // Main execution body. It executes continuously until doExit(). after which it executes takeDown()
     @Override
     public void Execute() {
         Info("\n\n Status: " + myStatus.name());
@@ -96,7 +93,7 @@ public class ITT extends LARVAFirstAgent {
             case START:
                 myStatus = Status.CHECKIN;
                 break;
-            case CHECKIN: // The execution of a state (as a method) returns the next state
+            case CHECKIN:
                 myStatus = MyCheckin();
                 break;
             case OPENPROBLEM:
@@ -124,16 +121,11 @@ public class ITT extends LARVAFirstAgent {
     @Override
     public void takeDown() {
         Info("Taking down...");
-        // Save the Sequence Diagram
-//        this.saveSequenceDiagram("./" + getLocalName() + ".seqd");
         super.takeDown();
     }
 
-    // It loads the passport selected in the GUI and send it to the Identity manager
     public Status MyCheckin() {
         Info("Loading passport and checking-in to LARVA");
-        //this.loadMyPassport("config/<ANATOLI_GRISHENKO>.passport");
-        // If checkin works, then continue, else exit
         if (!doLARVACheckin()) {
             Error("Unable to checkin");
             return Status.EXIT;
@@ -141,14 +133,12 @@ public class ITT extends LARVAFirstAgent {
         return Status.OPENPROBLEM;
     }
 
-    // Says good by to the Identity Manager and leaves LARVA
     public Status MyCheckout() {
         this.doLARVACheckout();
         return Status.EXIT;
     }
 
     public Status MyOpenProblem() {
-        // Look i the DF who is in charge of service PMANAGER
         if (this.DFGetAllProvidersOf(service).isEmpty()) {
             Error("Service PMANAGER is down");
             return Status.CHECKOUT;
@@ -160,17 +150,13 @@ public class ITT extends LARVAFirstAgent {
         if (problem == null)
             return Status.CHECKOUT;
 
-        // Send it a message to open a problem instance
         this.outbox = new ACLMessage();
         outbox.setSender(getAID());
         outbox.addReceiver(new AID(problemManager, AID.ISLOCALNAME));
-        sessionAlias = "JOSEMIGUELMARQUEZHERREROS";
         outbox.setContent("Request open " + problem + " alias " + sessionAlias);
         this.LARVAsend(outbox);
         Info("Request opening problem " + problem + " to " + problemManager);
 
-        // There will be arriving two messages, one coming from the
-        // Problem Manager and the other from the brand new Session Manager
         open = LARVAblockingReceive();
         Info(problemManager + " says: " + open.getContent());
         content = open.getContent();
@@ -186,13 +172,10 @@ public class ITT extends LARVAFirstAgent {
             return Status.CHECKOUT;
         }
     }
-    
-    // Just register in the DF as a terrestrial agent AT_ST
+
     public Status MyJoinSession() {
         Info("Querying CITIES");
-        outbox = new ACLMessage();
-        outbox.setSender(this.getAID());
-        outbox.addReceiver(new AID(sessionManager, AID.ISLOCALNAME));
+        outbox = session.createReply();
         outbox.setContent("Query CITIES session " + sessionKey);
         this.LARVAsend(outbox);
         session = LARVAblockingReceive();
@@ -214,74 +197,103 @@ public class ITT extends LARVAFirstAgent {
         this.openRemote();
         this.MyReadPerceptions();
         this.doPrepareNPC(1, DEST.class);
-//        Info(this.easyPrintPerceptions());
-//        // Mark this GPS positoin as our destination
-//        return this.myAssistedNavigation(37, 13);
-
+        
         outbox = session.createReply();
         outbox.setContent("Query missions session " + sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
-        String mission = chooseMission();
-        if (mission == null)
+        
+        return SelectMission();
+    }
+    
+    public Status SelectMission() {
+        String m = chooseMission();
+        if (m == null)
             return Status.CLOSEPROBLEM;
         
-        E.setCurrentMission(mission);
-        
+        getEnvironment().setCurrentMission(m);
         return Status.SOLVEPROBLEM;
     }
 
     public Status MySolveProblem() {
-        String currentGoal = E.getCurrentGoal();
-        Info("Current goal: " + currentGoal);
+        String[] aux = getEnvironment().getCurrentGoal().split(" ");
+        Type type = Type.valueOf(aux[0]);
+        Status status;
         
-        if (currentGoal.equals("")) {
-            return Status.CLOSEPROBLEM;
+        switch(type) {
+            case MOVEIN:
+                if (!goalInitiated) {
+                    goalInitiated = true;
+                    outbox = session.createReply();
+                    outbox.setContent("Request course in " + aux[1] + " session " + sessionKey);
+                    this.LARVAsend(outbox);
+
+                    session = this.LARVAblockingReceive();
+                    getEnvironment().setExternalPerceptions(session.getContent());
+                }
+                
+                status = doMoveIn();
+                
+                break;
+            case LIST:
+                status = doQueryPeople(aux[1]);
+                getEnvironment().getCurrentMission().nextGoal();
+                if (getEnvironment().getCurrentMission().isOver())
+                    status = Status.CLOSEPROBLEM;
+                break;
+            case REPORT:
+                status = doReport();
+                break;
+            default:
+                status = Status.CLOSEPROBLEM;
+                break;
         }
+        
+        return status;
+    }
+    
+    public Status doReport(){
+        return Status.CLOSEPROBLEM;
+    }
+    
+    public Status doMoveIn() {        
+        if (G(E)) {
+            Info("The problem is over");
+            Message("The problem " + problem + " has been solved");
+            goalInitiated = false;
+            getEnvironment().getCurrentMission().nextGoal();
+            if (getEnvironment().getCurrentMission().isOver())
+                return Status.CLOSEPROBLEM;
+            
+            return Status.SOLVEPROBLEM;
+        }
+                
+        behaviour = AgPlan(E, A);
+        if (behaviour == null || behaviour.isEmpty()) {
+            Alert("Found no plan to execute");
+            return Status.CLOSEPROBLEM;
+        } else {
+            Info("Found plan: " + behaviour.toString());
+            while (!behaviour.isEmpty()) {
+                a = behaviour.get(0);
+                behaviour.remove(0);
+                Info("Excuting " + a);
+                this.MyExecuteAction(a.getName());
+                if (!Ve(E)) {
+                    this.Error("The agent is not alive: " + E.getStatus());
+                    return Status.CLOSEPROBLEM;
+                }
+            }
              
-        if (currentGoal.startsWith("MOVEIN")) {
-            String ciudad = currentGoal.split(" ")[1];
-            
-            if (!this.MyAssistedNavigationActivated) {
-                this.myAssistedNavigation(ciudad);
-                this.MyAssistedNavigationActivated = true;
-            }
-            
-            if (G(E)) {
-                return problemCompleted();
-            }
-            
-            if (!Ve(E)) {
-                return Status.CLOSEPROBLEM;
-            }
-            
-            Choice action = this.Ag(E, A);
-            if (action == null) {
-                return Status.CLOSEPROBLEM;
-            }
-            
-            this.MyExecuteAction(action.getName());
             this.MyReadPerceptions();
             return Status.SOLVEPROBLEM;
-            
-        } else if (currentGoal.startsWith("LIST")) {
-            String tipo = currentGoal.split(" ")[1];
-            return doQueryPeople(tipo);
-            
-        } else if (currentGoal.startsWith("REPORT")) {
-            
         }
-       
-        
-        
-        return Status.SOLVEPROBLEM;
     }
 
     protected boolean MyExecuteAction(String action) {
         Info("Executing action " + action);
         outbox = session.createReply();
-        // Remember to include sessionID in all communications
         outbox.setContent("Request execute " + action + " session " + sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
@@ -351,14 +363,13 @@ public class ITT extends LARVAFirstAgent {
     }
 
     public double goAvoid(Environment E, Choice a) {
-        // By default, we avoid something in front of us by turing always right
         if (a.getName().equals("RIGHT")) {
             nextWhichwall = "LEFT";
             nextdistance = E.getDistance();
             nextPoint = E.getGPS();
-            return Choice.ANY_VALUE; // I give the choice "RIGHT" a positive value, any
+            return Choice.ANY_VALUE;
         }
-        return Choice.MAX_UTILITY; // and the others just a penalty with the max value, so that the decisoin is clear, isn't it?
+        return Choice.MAX_UTILITY;
     }
 
     public double goFollowWallLeft(Environment E, Choice a) {
@@ -416,8 +427,6 @@ public class ITT extends LARVAFirstAgent {
         }
     }
 
-    // Read perceptions and send them directly to the Environment instance,
-    // so we can query any items of sensors and added-value information
     protected boolean MyReadPerceptions() {
         Info("Reading perceptions");
         outbox = session.createReply();
@@ -434,18 +443,16 @@ public class ITT extends LARVAFirstAgent {
         return true;
     }
 
-    // Just mark an X Y position as our next target. No more
-    protected Status myAssistedNavigation(String goal) {
-        Info("Requesting course in " + goal);
+    protected Status myAssistedNavigation(int goalx, int goaly) {
+        Info("Requesting course to " + goalx + " " + goaly);
         outbox = session.createReply();
-        outbox.setContent("Request course in " + goal + " Session " + sessionKey);
+        outbox.setContent("Request course to " + goalx + " " + goaly + " Session " + sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
         return Status.CHECKIN.SOLVEPROBLEM;
     }
 
-    // Every time a stop surrounding, I delete the previous memorized values 
     public void resetAutoNAV() {
         nextWhichwall = whichWall = "NONE";
         nextdistance = distance = Choice.MAX_UTILITY;
@@ -454,7 +461,6 @@ public class ITT extends LARVAFirstAgent {
 
     public Status MyCloseProblem() {
         Info("Plan = " + preplan);
-        // Closing the problem by replying to the backup message
         outbox = open.createReply();
         outbox.setContent("Cancel session " + sessionKey);
         Info("Closing problem " + problem + ", session " + sessionKey);
@@ -465,7 +471,6 @@ public class ITT extends LARVAFirstAgent {
         return Status.CHECKOUT;
     }
 
-    // A new method just to show the information of sensors in console
     public String easyPrintPerceptions() {
         String res;
         int matrix[][];
@@ -649,6 +654,19 @@ public class ITT extends LARVAFirstAgent {
         }
     }
     
+    @Override
+    protected String chooseMission() {
+        Info("Choose mission");
+        String m = "";
+        if(getEnvironment().getAllMissions().length == 1)
+            m = getEnvironment().getAllMissions()[0];
+        else
+            m = this.inputSelect("Please choose a mission", getEnvironment().getAllMissions(), "");
+        
+        Info("Selected mission " + m);
+        return m;
+    }
+    
     protected Status doQueryPeople(String type) {
         Info("Querying people " + type);
         outbox = session.createReply();
@@ -658,18 +676,6 @@ public class ITT extends LARVAFirstAgent {
         getEnvironment().setExternalPerceptions(session.getContent());
         Message("Found " + getEnvironment().getPeople().length + " " + type + " in " + getEnvironment().getCurrentCity());
         
-        E.getCurrentMission().nextGoal();
         return myStatus;
     }
-    
-    protected Status problemCompleted() {
-        E.getCurrentMission().nextGoal();
-        this.MyAssistedNavigationActivated = false;
-
-        if (E.getCurrentMission().isOver())
-            return Status.CLOSEPROBLEM;
-        
-        return Status.SOLVEPROBLEM;
-    }
-
 }
