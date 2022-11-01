@@ -32,7 +32,8 @@ public class ITT extends LARVAFirstAgent {
             problemManager = "", 
             sessionManager, 
             content, 
-            sessionKey;
+            sessionKey,
+            sessionAlias;
     ACLMessage open, session; // Backup of relevant messages
     String[] contentTokens; // To parse the content
     protected String action = "", preplan = "", whichWall, nextWhichwall;
@@ -43,22 +44,26 @@ public class ITT extends LARVAFirstAgent {
     protected boolean showPerceptions = false, useAlias = false;
     Plan behaviour = null;
     Environment Ei, Ef;
+    boolean MyAssistedNavigationActivated = false;
     Choice a;
 
     // This is the firs method executed by any agent, right before its creation
     @Override
     public void setup() {
-//        this.enableDeepLARVAMonitoring();
         super.setup();
+        showPerceptions = false;
         logger.onTabular();
         myStatus = Status.START;
         this.setupEnvironment();
 
         // Acciones disponibles
         A = new DecisionSet();
-        A.addChoice(new Choice("MOVE")).
-                addChoice(new Choice("LEFT")).
-                addChoice(new Choice("RIGHT"));
+        A.addChoice(new Choice("MOVE"));
+        A.addChoice(new Choice("LEFT"));
+        A.addChoice(new Choice("RIGHT"));
+        
+        this.enableDeepLARVAMonitoring();
+        this.deactivateSequenceDiagrams();
         
         problems = new String[] {
             "SandboxTesting",
@@ -159,7 +164,8 @@ public class ITT extends LARVAFirstAgent {
         this.outbox = new ACLMessage();
         outbox.setSender(getAID());
         outbox.addReceiver(new AID(problemManager, AID.ISLOCALNAME));
-        outbox.setContent("Request open " + problem);
+        sessionAlias = "JOSEMIGUELMARQUEZHERREROS";
+        outbox.setContent("Request open " + problem + " alias " + sessionAlias);
         this.LARVAsend(outbox);
         Info("Request opening problem " + problem + " to " + problemManager);
 
@@ -197,7 +203,7 @@ public class ITT extends LARVAFirstAgent {
         this.resetAutoNAV();
         this.DFAddMyServices(new String[]{"TYPE ITT"});
         outbox = session.createReply();
-        outbox.setContent("Request join session " + sessionKey + "in " + city);
+        outbox.setContent("Request join session " + sessionKey + " in " + city);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         if (!session.getContent().startsWith("Confirm")) {
@@ -227,34 +233,49 @@ public class ITT extends LARVAFirstAgent {
     }
 
     public Status MySolveProblem() {
-        if (G(E)) {
-            Info("The problem is over");
-            Message("The problem " + problem + " has been solved");
+        String currentGoal = E.getCurrentGoal();
+        Info("Current goal: " + currentGoal);
+        
+        if (currentGoal.equals("")) {
             return Status.CLOSEPROBLEM;
         }
-        behaviour = AgPlan(E, A);
-        // If no choice is selected is due to a confusion of the AgPlan( ) function, then stop
-        if (behaviour == null || behaviour.isEmpty()) {
-            Alert("Found no plan to execute");
-            return Status.CLOSEPROBLEM;
-        } else {// Execute
-            Info("Found plan: " + behaviour.toString());
-            while (!behaviour.isEmpty()) {
-                a = behaviour.get(0);
-                behaviour.remove(0);
-                Info("Excuting " + a);
-                this.MyExecuteAction(a.getName());
-                // If we have made a mistake in the selection of the best choice a to execute,
-                // this might compromise the integrity of the agent. Check that it has noe died!
-                if (!Ve(E)) {
-                    this.Error("The agent is not alive: " + E.getStatus());
-                    return Status.CLOSEPROBLEM;
-                }
+             
+        if (currentGoal.startsWith("MOVEIN")) {
+            String ciudad = currentGoal.split(" ")[1];
+            
+            if (!this.MyAssistedNavigationActivated) {
+                this.myAssistedNavigation(ciudad);
+                this.MyAssistedNavigationActivated = true;
             }
-            // Afterwards, read the sensors to reubicate the new state
+            
+            if (G(E)) {
+                return problemCompleted();
+            }
+            
+            if (!Ve(E)) {
+                return Status.CLOSEPROBLEM;
+            }
+            
+            Choice action = this.Ag(E, A);
+            if (action == null) {
+                return Status.CLOSEPROBLEM;
+            }
+            
+            this.MyExecuteAction(action.getName());
             this.MyReadPerceptions();
             return Status.SOLVEPROBLEM;
+            
+        } else if (currentGoal.startsWith("LIST")) {
+            String tipo = currentGoal.split(" ")[1];
+            return doQueryPeople(tipo);
+            
+        } else if (currentGoal.startsWith("REPORT")) {
+            
         }
+       
+        
+        
+        return Status.SOLVEPROBLEM;
     }
 
     protected boolean MyExecuteAction(String action) {
@@ -414,10 +435,10 @@ public class ITT extends LARVAFirstAgent {
     }
 
     // Just mark an X Y position as our next target. No more
-    protected Status myAssistedNavigation(int goalx, int goaly) {
-        Info("Requesting course to " + goalx + " " + goaly);
+    protected Status myAssistedNavigation(String goal) {
+        Info("Requesting course in " + goal);
         outbox = session.createReply();
-        outbox.setContent("Request course to " + goalx + " " + goaly + " Session " + sessionKey);
+        outbox.setContent("Request course in " + goal + " Session " + sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
@@ -440,6 +461,7 @@ public class ITT extends LARVAFirstAgent {
         this.LARVAsend(outbox);
         inbox = LARVAblockingReceive();
         Info(problemManager + " says: " + inbox.getContent());
+        this.doDestroyNPC();
         return Status.CHECKOUT;
     }
 
@@ -625,6 +647,29 @@ public class ITT extends LARVAFirstAgent {
         } else {
             return String.format("%05.2f ", v);
         }
+    }
+    
+    protected Status doQueryPeople(String type) {
+        Info("Querying people " + type);
+        outbox = session.createReply();
+        outbox.setContent("Query " + type.toUpperCase() + " session " + sessionKey);
+        this.LARVAsend(outbox);
+        session = LARVAblockingReceive();
+        getEnvironment().setExternalPerceptions(session.getContent());
+        Message("Found " + getEnvironment().getPeople().length + " " + type + " in " + getEnvironment().getCurrentCity());
+        
+        E.getCurrentMission().nextGoal();
+        return myStatus;
+    }
+    
+    protected Status problemCompleted() {
+        E.getCurrentMission().nextGoal();
+        this.MyAssistedNavigationActivated = false;
+
+        if (E.getCurrentMission().isOver())
+            return Status.CLOSEPROBLEM;
+        
+        return Status.SOLVEPROBLEM;
     }
 
 }
