@@ -180,7 +180,7 @@ public class ITT extends LARVAFirstAgent {
             return Status.CHECKOUT;
         }
     }
-
+    
     // Just register in the DF as a terrestrial agent AT_ST
     public Status MyJoinSession() {
         Info("Querying CITIES");
