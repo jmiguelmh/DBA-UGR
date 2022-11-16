@@ -92,6 +92,9 @@ public class ITT extends LARVAFirstAgent {
             "Endor.Hon2",
             "AlertDeathStar",
             "Wobani.Apr1",
+            "Wobani.Not1",
+            "Wobani.Sob1",
+            "Wobani.Hon1",
         };
     }
 
@@ -241,6 +244,8 @@ public class ITT extends LARVAFirstAgent {
                     goalInitiated = true;
                     outbox = session.createReply();
                     outbox.setContent("Request course in " + aux[1] + " session " + sessionKey);
+                    outbox.setProtocol("DROIDSHIP");
+                    outbox.setConversationId(sessionKey);
                     outbox.setPerformative(ACLMessage.REQUEST);
                     this.LARVAsend(outbox);
 
@@ -329,15 +334,46 @@ public class ITT extends LARVAFirstAgent {
     }
 
     protected boolean MyExecuteAction(String action) {
-        Info("Executing action " + action);
-        outbox = session.createReply();
-        outbox.setContent("Request execute " + action + " session " + sessionKey);
-        outbox.setPerformative(ACLMessage.REQUEST);
-        this.LARVAsend(outbox);
-        session = this.LARVAblockingReceive();
-        if (!session.getContent().startsWith("Inform")) {
-            Error("Unable to execute action " + action + " due to " + session.getContent());
-            return false;
+        if (action.equals("RECHARGE")) {
+            ArrayList<String> rechargers = this.DFGetAllProvidersOf("TYPE BB1F");
+            ArrayList<String> rechargersList = new ArrayList<>();
+            if (!rechargers.isEmpty()) {
+                for (int i=0; i<rechargers.size(); i++)
+                    if (this.DFHasService(rechargers.get(i), sessionKey))
+                        rechargersList.add(rechargers.get(i));
+
+                boolean stop = false;
+                int aux = 0;
+                while(!stop) {
+                    String recharger = rechargersList.get(aux % rechargersList.size());
+                    aux++;
+                    outbox = new ACLMessage();
+                    outbox.setSender(getAID());
+                    outbox.addReceiver(new AID(recharger, AID.ISLOCALNAME));
+                    outbox.setContent("REFILL");
+                    outbox.setPerformative(ACLMessage.REQUEST);
+                    outbox.setConversationId(sessionKey);
+                    outbox.setProtocol("DROIDSHIP");
+                    this.LARVAsend(outbox);
+                    outbox = this.LARVAblockingReceive();
+                    if(outbox.getPerformative() == ACLMessage.AGREE) {
+                        outbox = this.LARVAblockingReceive();
+                        if (outbox.getPerformative() == ACLMessage.INFORM)
+                            stop = true;   
+                    }
+                }
+            }
+        } else {
+            Info("Executing action " + action);
+            outbox = session.createReply();
+            outbox.setContent("Request execute " + action + " session " + sessionKey);
+            outbox.setPerformative(ACLMessage.REQUEST);
+            this.LARVAsend(outbox);
+            session = this.LARVAblockingReceive();
+            if (!session.getContent().startsWith("Inform")) {
+                Error("Unable to execute action " + action + " due to " + session.getContent());
+                return false;
+            }
         }
         
         return true;
