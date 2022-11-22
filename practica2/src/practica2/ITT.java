@@ -1,8 +1,11 @@
 package practica2;
 
 import Environment.Environment;
+import agents.BB1F;
 import agents.DEST;
 import agents.LARVAFirstAgent;
+import agents.MTT;
+import agents.YV;
 import ai.Choice;
 import ai.DecisionSet;
 import ai.Plan;
@@ -20,7 +23,8 @@ public class ITT extends LARVAFirstAgent {
         CHECKIN, 
         OPENPROBLEM, 
         JOINSESSION, 
-        SOLVEPROBLEM, 
+        SOLVEPROBLEM,
+        RECHARGE,
         CLOSEPROBLEM, 
         CHECKOUT, 
         EXIT
@@ -29,7 +33,8 @@ public class ITT extends LARVAFirstAgent {
     enum Type {
         MOVEIN,
         LIST,
-        REPORT
+        REPORT,
+        CAPTURE
     }
     
     Status myStatus;
@@ -53,7 +58,9 @@ public class ITT extends LARVAFirstAgent {
     Plan behaviour = null;
     Environment Ei, Ef;
     Choice a;
-    Boolean goalInitiated = false, destFounded = false;
+    Boolean goalInitiated = false, destFounded = false, refilling = false;
+    int iteratorRefillers;
+    
 
     @Override
     public void setup() {
@@ -71,7 +78,7 @@ public class ITT extends LARVAFirstAgent {
                 addChoice(new Choice("RIGHT"));
         
         problems = new String[] {
-            "SandboxTesting",
+            /*"SandboxTesting",
             "FlatNorth",
             "FlatNorthWest",
             "FlatSouth",
@@ -90,11 +97,11 @@ public class ITT extends LARVAFirstAgent {
             "Endor.Sob2",
             "Endor.Hon1",
             "Endor.Hon2",
-            "AlertDeathStar",
+            "AlertDeathStar",*/
             "Wobani.Apr1",
             "Wobani.Not1",
             "Wobani.Sob1",
-            "Wobani.Hon1",
+            "Wobani.Hon1"
         };
     }
 
@@ -116,6 +123,9 @@ public class ITT extends LARVAFirstAgent {
                 break;
             case SOLVEPROBLEM:
                 myStatus = MySolveProblem();
+                break;
+            case RECHARGE:
+                myStatus = MyRecharge();
                 break;
             case CLOSEPROBLEM:
                 myStatus = MyCloseProblem();
@@ -167,6 +177,7 @@ public class ITT extends LARVAFirstAgent {
         outbox.addReceiver(new AID(problemManager, AID.ISLOCALNAME));
         outbox.setContent("Request open " + problem + " alias " + sessionAlias);
         outbox.setPerformative(ACLMessage.REQUEST);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         Info("Request opening problem " + problem + " to " + problemManager);
 
@@ -191,6 +202,7 @@ public class ITT extends LARVAFirstAgent {
         outbox = session.createReply();
         outbox.setContent("Query CITIES session " + sessionKey);
         outbox.setPerformative(ACLMessage.QUERY_REF);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         session = LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
@@ -198,11 +210,17 @@ public class ITT extends LARVAFirstAgent {
         Info(cities[0]);
         String city = inputSelect("Please select the city", cities, "");
         
+        this.doPrepareNPC(1, DEST.class);
+        this.doPrepareNPC(1, BB1F.class); //Posible error
+        this.doPrepareNPC(0, YV.class);
+        this.doPrepareNPC(1, MTT.class);
+        
         this.resetAutoNAV();
         this.DFAddMyServices(new String[]{"TYPE ITT"});
         outbox = session.createReply();
         outbox.setContent("Request join session " + sessionKey + " in " + city);
         outbox.setPerformative(ACLMessage.REQUEST);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         if (!session.getContent().startsWith("Confirm")) {
@@ -212,11 +230,13 @@ public class ITT extends LARVAFirstAgent {
         
         this.openRemote();
         this.MyReadPerceptions();
-        this.doPrepareNPC(1, DEST.class);
+
+
         
         outbox = session.createReply();
         outbox.setContent("Query missions session " + sessionKey);
         outbox.setPerformative(ACLMessage.QUERY_REF);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
@@ -238,15 +258,16 @@ public class ITT extends LARVAFirstAgent {
         Type type = Type.valueOf(aux[0]);
         Status status = null;
         
+        Info("Solveproblem info goal:"+aux[0]);
+        
         switch(type) {
             case MOVEIN:
                 if (!goalInitiated) {
                     goalInitiated = true;
                     outbox = session.createReply();
                     outbox.setContent("Request course in " + aux[1] + " session " + sessionKey);
-                    outbox.setProtocol("DROIDSHIP");
-                    outbox.setConversationId(sessionKey);
                     outbox.setPerformative(ACLMessage.REQUEST);
+                    outbox.setConversationId(sessionKey);
                     this.LARVAsend(outbox);
 
                     session = this.LARVAblockingReceive();
@@ -258,18 +279,64 @@ public class ITT extends LARVAFirstAgent {
                 break;
             case LIST:
                 status = doQueryPeople(aux[1]);
-                getEnvironment().getCurrentMission().nextGoal();
+                getEnvironment().setNextGoal();
                 break;
             case REPORT:
                 status = doReport();
-                getEnvironment().getCurrentMission().nextGoal();
+                getEnvironment().setNextGoal();
+                break;
+            case CAPTURE:
+                status = doCapture();
+                getEnvironment().setNextGoal();
                 break;
         }
         
-        if (getEnvironment().getCurrentMission().isOver())
-                status = Status.CLOSEPROBLEM;
+        if (getEnvironment().getCurrentMission().isOver()){
+            status = Status.CLOSEPROBLEM;
+            Message("The problem " + problem + " has been solved");
+        }
+        if(getEnvironment().getEnergy() < 50) status = Status.RECHARGE;
         
         return status;
+    }
+    
+    public Status MyRecharge() {
+        Info("RECARGA. Nivel actual = "+Integer.toString(getEnvironment().getEnergy()));
+        iteratorRefillers = 1;
+        ArrayList<String> rechargers = this.DFGetAllProvidersOf("TYPE BB1F");
+        ArrayList<String> rechargersList = new ArrayList<>();
+        if (!rechargers.isEmpty()) {
+            for (int i=0; i<rechargers.size(); i++)
+                if (this.DFHasService(rechargers.get(i), sessionKey))
+                    rechargersList.add(rechargers.get(i));
+          
+            boolean stop = false;
+            int aux = 0;
+            while(!stop) {
+                String recharger = rechargersList.get(aux % rechargersList.size());
+                aux++;
+                outbox = new ACLMessage();
+                outbox.setSender(getAID());
+                outbox.addReceiver(new AID(recharger, AID.ISLOCALNAME));
+                outbox.setContent("REFILL");
+                outbox.setPerformative(ACLMessage.REQUEST);
+                outbox.setConversationId(sessionKey);
+                outbox.setProtocol("DROIDSHIP");
+                this.LARVAsend(outbox);
+                session = this.LARVAblockingReceive();
+                if(session.getPerformative() == ACLMessage.AGREE) {
+                    session = this.LARVAblockingReceive();
+                    if (session.getPerformative() == ACLMessage.INFORM)
+                        stop = true;
+                }
+            }
+            
+            goalInitiated = false;
+            
+            return Status.SOLVEPROBLEM;
+        }
+        
+        return Status.CLOSEPROBLEM;
     }
     
     public void destFounder() {
@@ -286,6 +353,118 @@ public class ITT extends LARVAFirstAgent {
             destFounded = true;
         }
     }
+    
+        protected Status doQueryPeople(String type) {
+        Info("Querying people " + type);
+        outbox = session.createReply();
+        outbox.setContent("Query " + type.toUpperCase() 
+                          + " session " + sessionKey);
+        outbox.setPerformative(ACLMessage.QUERY_REF);
+        outbox.setConversationId(sessionKey);
+        this.LARVAsend(outbox);
+        session = LARVAblockingReceive();
+        getEnvironment().setExternalPerceptions(session.getContent());
+        Message("Found " + getEnvironment().getPeople().length + " " 
+                + type + " in " +getEnvironment().getCurrentCity());
+        
+        if(report == ""){
+            report += "REPORT;" + getEnvironment().getCurrentCity() + " " 
+                      + type.toLowerCase() + " " 
+                      + getEnvironment().getPeople().length;
+            actualCity = getEnvironment().getCurrentCity();
+        }else{
+            if (!getEnvironment().getCurrentCity().equals(actualCity)){
+                report += ";" + getEnvironment().getCurrentCity();
+                actualCity = getEnvironment().getCurrentCity();
+            }
+
+            report += " " + type.toLowerCase() + " " 
+                      + getEnvironment().getPeople().length;                
+        }
+        
+        return myStatus;
+    }
+    
+    public Status doCapture(){
+        ArrayList<String> capturers = this.DFGetAllProvidersOf("TYPE MTT");
+        ArrayList<String> capturersList = new ArrayList<>();
+        String objectivesList = "Name";
+        if (!capturers.isEmpty()) {
+            for (int i=0; i<capturers.size(); i++)
+                if (this.DFHasService(capturers.get(i), sessionKey))
+                    capturersList.add(capturers.get(i));
+            int aux = 0;
+            
+            String capturer = capturersList.get(aux % capturersList.size());
+            aux++; //Inutil ahora mismo, no estamos en un bucle
+            outbox = new ACLMessage();
+            outbox.setSender(getAID());
+            outbox.addReceiver(new AID(capturer, AID.ISLOCALNAME));
+            outbox.setContent("BACKUP");
+            outbox.setPerformative(ACLMessage.REQUEST);
+            outbox.setConversationId(sessionKey);
+            outbox.setProtocol("DROIDSHIP");
+            this.LARVAsend(outbox);
+            session = this.LARVAblockingReceive();
+            
+            if(session.getPerformative() == ACLMessage.AGREE) {
+                session = this.LARVAblockingReceive();
+                if (session.getPerformative() == ACLMessage.INFORM){
+                    String[] currentGoal = getEnvironment().getCurrentGoal().split(" ");
+                    String type = currentGoal[2];
+                    int quantity = Integer.parseInt(currentGoal[1]);
+                    Info("Querying people " + type);
+                    
+                    outbox = new ACLMessage();
+                    outbox.setSender(getAID());
+                    outbox.addReceiver(new AID(sessionManager, AID.ISLOCALNAME));
+                    outbox.setContent("Query " + type.toUpperCase() + " session " + sessionKey);
+                    outbox.setPerformative(ACLMessage.QUERY_REF);
+                    outbox.setConversationId(sessionKey);
+                    this.LARVAsend(outbox);
+                    session = LARVAblockingReceive();
+                    
+                    getEnvironment().setExternalPerceptions(session.getContent());
+                    String[] peopleList = getEnvironment().getPeople();
+                    
+                    if(quantity <= peopleList.length){  
+                        for (int i = 0; i < quantity; i++){
+                            Info(E.getCurrentGoal());
+                            Message("Request capture " + peopleList[i] + " SESSION " + sessionKey);
+                            
+                            outbox = session.createReply();
+                            outbox.setContent("Request capture " +peopleList[i] + " SESSION " + sessionKey);
+                            outbox.setPerformative(ACLMessage.REQUEST);
+                            outbox.setConversationId(sessionKey);
+                            this.LARVAsend(outbox);
+                            session = LARVAblockingReceive();
+                            
+                            if (session.getPerformative() == ACLMessage.REFUSE){
+                                Message("Unable to capture");
+                                return Status.CLOSEPROBLEM;
+                            }
+                            if (session.getPerformative() == ACLMessage.INFORM){
+                                outbox = new ACLMessage();
+                                outbox.setSender(getAID());
+                                outbox.addReceiver(new AID(capturer, AID.ISLOCALNAME));
+                                outbox.setContent("CANCEL");
+                                outbox.setPerformative(ACLMessage.CANCEL);
+                                outbox.setConversationId(sessionKey);
+                                outbox.setProtocol("DROIDSHIP");
+                                this.LARVAsend(outbox);
+                                return Status.SOLVEPROBLEM;
+                            }
+                        }
+                    } else{
+                        Message("Not enough "+ type+" to capture in "+getEnvironment().getCurrentCity());
+                    }
+                }
+            }
+            
+            return Status.SOLVEPROBLEM;
+        }
+        return Status.CLOSEPROBLEM;
+    }
         
     
     public Status doReport(){
@@ -296,6 +475,7 @@ public class ITT extends LARVAFirstAgent {
         outbox.addReceiver(new AID(dest, AID.ISLOCALNAME));
         outbox.setContent(report);
         outbox.setPerformative(ACLMessage.INFORM);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         Info("Sended report");
         return Status.SOLVEPROBLEM;
@@ -303,10 +483,10 @@ public class ITT extends LARVAFirstAgent {
     
     public Status doMoveIn() {        
         if (G(E)) {
-            Info("The problem is over");
-            Message("The problem " + problem + " has been solved");
+            Info("The goal is over");
+            //Message("The problem " + problem + " has been solved");
             goalInitiated = false;
-            getEnvironment().getCurrentMission().nextGoal();
+            getEnvironment().setNextGoal();
             
             return Status.SOLVEPROBLEM;
         }
@@ -334,46 +514,16 @@ public class ITT extends LARVAFirstAgent {
     }
 
     protected boolean MyExecuteAction(String action) {
-        if (action.equals("RECHARGE")) {
-            ArrayList<String> rechargers = this.DFGetAllProvidersOf("TYPE BB1F");
-            ArrayList<String> rechargersList = new ArrayList<>();
-            if (!rechargers.isEmpty()) {
-                for (int i=0; i<rechargers.size(); i++)
-                    if (this.DFHasService(rechargers.get(i), sessionKey))
-                        rechargersList.add(rechargers.get(i));
-
-                boolean stop = false;
-                int aux = 0;
-                while(!stop) {
-                    String recharger = rechargersList.get(aux % rechargersList.size());
-                    aux++;
-                    outbox = new ACLMessage();
-                    outbox.setSender(getAID());
-                    outbox.addReceiver(new AID(recharger, AID.ISLOCALNAME));
-                    outbox.setContent("REFILL");
-                    outbox.setPerformative(ACLMessage.REQUEST);
-                    outbox.setConversationId(sessionKey);
-                    outbox.setProtocol("DROIDSHIP");
-                    this.LARVAsend(outbox);
-                    outbox = this.LARVAblockingReceive();
-                    if(outbox.getPerformative() == ACLMessage.AGREE) {
-                        outbox = this.LARVAblockingReceive();
-                        if (outbox.getPerformative() == ACLMessage.INFORM)
-                            stop = true;   
-                    }
-                }
-            }
-        } else {
-            Info("Executing action " + action);
-            outbox = session.createReply();
-            outbox.setContent("Request execute " + action + " session " + sessionKey);
-            outbox.setPerformative(ACLMessage.REQUEST);
-            this.LARVAsend(outbox);
-            session = this.LARVAblockingReceive();
-            if (!session.getContent().startsWith("Inform")) {
-                Error("Unable to execute action " + action + " due to " + session.getContent());
-                return false;
-            }
+        Info("Executing action " + action);
+        outbox = session.createReply();
+        outbox.setContent("Request execute " + action + " session " + sessionKey);
+        outbox.setPerformative(ACLMessage.REQUEST);
+        outbox.setConversationId(sessionKey);
+        this.LARVAsend(outbox);
+        session = this.LARVAblockingReceive();
+        if (!session.getContent().startsWith("Inform")) {
+            Error("Unable to execute action " + action + " due to " + session.getContent());
+            return false;
         }
         
         return true;
@@ -557,6 +707,7 @@ public class ITT extends LARVAFirstAgent {
         outbox = session.createReply();
         outbox.setContent("Query sensors session " + sessionKey);
         outbox.setPerformative(ACLMessage.QUERY_REF);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         this.myEnergy++;
         session = this.LARVAblockingReceive();
@@ -574,6 +725,7 @@ public class ITT extends LARVAFirstAgent {
         outbox = session.createReply();
         outbox.setContent("Request course to " + goalx + " " + goaly + " Session " + sessionKey);
         outbox.setPerformative(ACLMessage.REQUEST);
+        outbox.setConversationId(sessionKey);
         this.LARVAsend(outbox);
         session = this.LARVAblockingReceive();
         getEnvironment().setExternalPerceptions(session.getContent());
@@ -591,6 +743,7 @@ public class ITT extends LARVAFirstAgent {
         outbox = open.createReply();
         outbox.setContent("Cancel session " + sessionKey);
         outbox.setPerformative(ACLMessage.CANCEL);
+        outbox.setConversationId(sessionKey);
         Info("Closing problem " + problem + ", session " + sessionKey);
         this.LARVAsend(outbox);
         inbox = LARVAblockingReceive();
@@ -762,36 +915,6 @@ public class ITT extends LARVAFirstAgent {
         
         Info("Selected mission " + m);
         return m;
-    }
-    
-    protected Status doQueryPeople(String type) {
-        Info("Querying people " + type);
-        outbox = session.createReply();
-        outbox.setContent("Query " + type.toUpperCase() 
-                          + " session " + sessionKey);
-        outbox.setPerformative(ACLMessage.QUERY_REF);
-        this.LARVAsend(outbox);
-        session = LARVAblockingReceive();
-        getEnvironment().setExternalPerceptions(session.getContent());
-        Message("Found " + getEnvironment().getPeople().length + " " 
-                + type + " in " +getEnvironment().getCurrentCity());
-        
-        if(report == ""){
-            report += "REPORT;" + getEnvironment().getCurrentCity() + " " 
-                      + type.toLowerCase() + " " 
-                      + getEnvironment().getPeople().length;
-            actualCity = getEnvironment().getCurrentCity();
-        }else{
-            if (!getEnvironment().getCurrentCity().equals(actualCity)){
-                report += ";" + getEnvironment().getCurrentCity();
-                actualCity = getEnvironment().getCurrentCity();
-            }
-
-            report += " " + type.toLowerCase() + " " 
-                      + getEnvironment().getPeople().length;                
-        }
-        
-        return myStatus;
     }
     
     @Override
