@@ -34,7 +34,9 @@ public class ITT extends LARVAFirstAgent {
         MOVEIN,
         LIST,
         REPORT,
-        CAPTURE
+        CAPTURE,
+        MOVEBY,
+        TRANSFER
     }
     
     Status myStatus;
@@ -47,7 +49,7 @@ public class ITT extends LARVAFirstAgent {
             report = "",
             actualCity,
             sessionKey;
-    ACLMessage open, session;
+    ACLMessage open, session, droids;
     String[] contentTokens;
     protected String action = "", preplan = "", whichWall, nextWhichwall;
     protected String[] problems;
@@ -289,6 +291,16 @@ public class ITT extends LARVAFirstAgent {
                 status = doCapture();
                 getEnvironment().setNextGoal();
                 break;
+            case MOVEBY:
+                if(!goalInitiated){
+                    doMoveBy();
+                }
+                status = doMoveIn();
+                break;
+            case TRANSFER:
+                status = doTransfer();
+                getEnvironment().setNextGoal();
+                break;
         }
         
         if (getEnvironment().getCurrentMission().isOver()){
@@ -323,10 +335,10 @@ public class ITT extends LARVAFirstAgent {
                 outbox.setConversationId(sessionKey);
                 outbox.setProtocol("DROIDSHIP");
                 this.LARVAsend(outbox);
-                session = this.LARVAblockingReceive();
-                if(session.getPerformative() == ACLMessage.AGREE) {
-                    session = this.LARVAblockingReceive();
-                    if (session.getPerformative() == ACLMessage.INFORM)
+                droids = this.LARVAblockingReceive();
+                if(droids.getPerformative() == ACLMessage.AGREE) {
+                    droids = this.LARVAblockingReceive();
+                    if (droids.getPerformative() == ACLMessage.INFORM)
                         stop = true;
                 }
             }
@@ -384,6 +396,61 @@ public class ITT extends LARVAFirstAgent {
         
         return myStatus;
     }
+        
+    public Status doTransfer() {
+        int numberCaptured = E.getPayload();
+        String[] captured = E.getCargo();
+        for (int i=0; i<numberCaptured; i++) {
+            outbox = new ACLMessage();
+            outbox.setSender(getAID());
+            outbox.addReceiver(new AID(dest, AID.ISLOCALNAME));
+            outbox.setContent("TRANSFER "+captured[i]);
+            outbox.setPerformative(ACLMessage.REQUEST);
+            outbox.setConversationId(sessionKey);
+            outbox.setProtocol("DROIDSHIP");
+            outbox.setReplyWith(sessionKey+i);
+            LARVAsend(outbox);
+            droids = LARVAblockingReceive();
+            if (droids.getPerformative() == ACLMessage.REFUSE)
+                i = i - 1;
+            else if (droids.getPerformative() == ACLMessage.FAILURE)
+                return Status.CLOSEPROBLEM;
+        }
+        
+        return Status.SOLVEPROBLEM;
+    }
+    
+    public void doMoveBy(){
+        destFounder();
+        
+        outbox = new ACLMessage();
+        outbox.setSender(getAID());
+        outbox.setContent("TRANSPONDER");
+        outbox.setPerformative(ACLMessage.QUERY_REF);
+        outbox.setConversationId(sessionKey);
+        outbox.setProtocol("DROIDSHIP");
+        outbox.addReceiver(new AID(dest, AID.ISLOCALNAME));
+        LARVAsend(outbox);
+
+        droids = LARVAblockingReceive();
+        
+        if (droids.getPerformative() == ACLMessage.INFORM) {            
+            String[] transponder = droids.getContent().split("/");
+            String ciudad = transponder[3].split(" ")[2];
+            goalInitiated = true;
+            
+            if(!ciudad.equals(getEnvironment().getCurrentCity())){
+                this.outbox = session.createReply();
+                outbox.setPerformative(ACLMessage.REQUEST);
+                outbox.setConversationId(sessionKey);
+                outbox.setContent("Request course in " + ciudad + " session " + sessionKey);
+                this.LARVAsend(outbox);
+
+                session = this.LARVAblockingReceive();
+                getEnvironment().setExternalPerceptions(session.getContent());
+            }
+        }
+    }
     
     public Status doCapture(){
         ArrayList<String> capturers = this.DFGetAllProvidersOf("TYPE MTT");
@@ -405,19 +472,17 @@ public class ITT extends LARVAFirstAgent {
             outbox.setConversationId(sessionKey);
             outbox.setProtocol("DROIDSHIP");
             this.LARVAsend(outbox);
-            session = this.LARVAblockingReceive();
+            droids = this.LARVAblockingReceive();
             
-            if(session.getPerformative() == ACLMessage.AGREE) {
-                session = this.LARVAblockingReceive();
-                if (session.getPerformative() == ACLMessage.INFORM){
+            if(droids.getPerformative() == ACLMessage.AGREE) {
+                droids = this.LARVAblockingReceive();
+                if (droids.getPerformative() == ACLMessage.INFORM){
                     String[] currentGoal = getEnvironment().getCurrentGoal().split(" ");
                     String type = currentGoal[2];
                     int quantity = Integer.parseInt(currentGoal[1]);
                     Info("Querying people " + type);
                     
-                    outbox = new ACLMessage();
-                    outbox.setSender(getAID());
-                    outbox.addReceiver(new AID(sessionManager, AID.ISLOCALNAME));
+                    outbox = session.createReply();
                     outbox.setContent("Query " + type.toUpperCase() + " session " + sessionKey);
                     outbox.setPerformative(ACLMessage.QUERY_REF);
                     outbox.setConversationId(sessionKey);
@@ -429,8 +494,7 @@ public class ITT extends LARVAFirstAgent {
                     
                     if(quantity <= peopleList.length){  
                         for (int i = 0; i < quantity; i++){
-                            Info(E.getCurrentGoal());
-                            Message("Request capture " + peopleList[i] + " SESSION " + sessionKey);
+                            Info("Request capture " + peopleList[i] + " SESSION " + sessionKey);
                             
                             outbox = session.createReply();
                             outbox.setContent("Request capture " +peopleList[i] + " SESSION " + sessionKey);
@@ -443,24 +507,23 @@ public class ITT extends LARVAFirstAgent {
                                 Message("Unable to capture");
                                 return Status.CLOSEPROBLEM;
                             }
-                            if (session.getPerformative() == ACLMessage.INFORM){
-                                outbox = new ACLMessage();
-                                outbox.setSender(getAID());
-                                outbox.addReceiver(new AID(capturer, AID.ISLOCALNAME));
-                                outbox.setContent("CANCEL");
-                                outbox.setPerformative(ACLMessage.CANCEL);
-                                outbox.setConversationId(sessionKey);
-                                outbox.setProtocol("DROIDSHIP");
-                                this.LARVAsend(outbox);
-                                return Status.SOLVEPROBLEM;
-                            }
+
                         }
                     } else{
                         Message("Not enough "+ type+" to capture in "+getEnvironment().getCurrentCity());
                     }
                 }
+            }else{
+                return Status.CLOSEPROBLEM;
             }
-            
+            if (session.getPerformative() == ACLMessage.INFORM){
+                outbox = droids.createReply();
+                outbox.setContent("CANCEL");
+                outbox.setPerformative(ACLMessage.CANCEL);
+                outbox.setConversationId(sessionKey);
+                outbox.setProtocol("DROIDSHIP");
+                this.LARVAsend(outbox);
+            }
             return Status.SOLVEPROBLEM;
         }
         return Status.CLOSEPROBLEM;
@@ -480,6 +543,7 @@ public class ITT extends LARVAFirstAgent {
         Info("Sended report");
         return Status.SOLVEPROBLEM;
     }
+    
     
     public Status doMoveIn() {        
         if (G(E)) {
@@ -932,7 +996,7 @@ public class ITT extends LARVAFirstAgent {
                 exit = true;
             }
         }
+        
         return res;
     }
-
 }
